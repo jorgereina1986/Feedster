@@ -1,4 +1,4 @@
-package jorgereina1986.c4q.nyc.feedster;
+package jorgereina1986.c4q.nyc.feedster.ui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,23 +7,28 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import jorgereina1986.c4q.nyc.feedster.R;
+import jorgereina1986.c4q.nyc.feedster.adapters.FeedCardsAdapter;
+import jorgereina1986.c4q.nyc.feedster.loaders.TrendingNewsLoader;
+import jorgereina1986.c4q.nyc.feedster.models.CardData;
+import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 
 
 public class MainActivity extends ActionBarActivity {
 
     public static final String TAG = "My_Logcat";
-    private TextView tvJson1;
-    private TextView tvJson2;
     private TrendingNewsLoader trendsLoader;
     private List<String> trendsList;
+    private  FeedCardsAdapter feedCardsAdapter;
+    private TrendingData trendingData;
 
 
     @Override
@@ -31,8 +36,16 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "MainActivity.onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        RecyclerView rvFeedCards = (RecyclerView)findViewById(R.id.rv_feed_cards);
+        rvFeedCards.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        rvFeedCards.setLayoutManager(llm);
 
-        initializeViews();
+        trendingData = new TrendingData();
+        feedCardsAdapter = new FeedCardsAdapter();
+        List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
+        feedCardsAdapter.setCardDataList(cardDataList);
+        rvFeedCards.setAdapter(feedCardsAdapter);
         trendsLoader = new TrendingNewsLoader(this);
         trendsLoader.execute();
 
@@ -53,6 +66,9 @@ public class MainActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             trendsList = trendsLoader.getTrendingListData();
             Log.d("Receiver", "Received trendsList " + trendsList.size());
+            trendingData.setTrendingItems(trendsList);
+            feedCardsAdapter.setTrendingCardData(trendingData);
+            feedCardsAdapter.notifyDataSetChanged();
 
 
         }
@@ -65,10 +81,7 @@ public class MainActivity extends ActionBarActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
-    private void initializeViews() {
-        tvJson1 = (TextView) findViewById(R.id.json_1);
-        tvJson2 = (TextView) findViewById(R.id.json_2);
-    }
+
 
 
 

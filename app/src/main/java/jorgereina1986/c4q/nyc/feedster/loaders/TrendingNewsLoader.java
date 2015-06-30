@@ -1,4 +1,4 @@
-package jorgereina1986.c4q.nyc.feedster;
+package jorgereina1986.c4q.nyc.feedster.loaders;
 
 import android.content.Context;
 import android.content.Intent;
