@@ -4,24 +4,36 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import jorgereina1986.c4q.nyc.feedster.AppController;
 import jorgereina1986.c4q.nyc.feedster.R;
 import jorgereina1986.c4q.nyc.feedster.adapters.FeedCardsAdapter;
 import jorgereina1986.c4q.nyc.feedster.loaders.TrendingNewsLoader;
-import jorgereina1986.c4q.nyc.feedster.models.CardData;
-import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.loaders.WeatherNewsLoader;
+import jorgereina1986.c4q.nyc.feedster.models.CardData;
+import jorgereina1986.c4q.nyc.feedster.models.MusicItemData;
+import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
 
 public class MainActivity extends ActionBarActivity {
@@ -33,6 +45,10 @@ public class MainActivity extends ActionBarActivity {
     private TrendingData trendingData;
     private WeatherNewsLoader weatherLoader;
     private WeatherData weatherData;
+    private List<MusicItemData> musicList = new ArrayList<>();
+    private static final String MUSIC_API_URL = "https://itunes.apple.com/us/rss/topsongs/limit=10/explicit=true/json";
+
+
 
 
     @Override
@@ -72,7 +88,18 @@ public class MainActivity extends ActionBarActivity {
         //create the Async task to trending data from the API. When it finishes, it will send us a notification.
         weatherLoader = new WeatherNewsLoader(this);
         weatherLoader.execute();
+
+        // Creating volley request obj
+        Response.Listener<JSONObject> volleyCallbackListener = getResponseListener();
+        Response.ErrorListener volleyErrorListener = getResponseErrorListener();
+
+        JsonObjectRequest movieReq = new JsonObjectRequest(MUSIC_API_URL, null, volleyCallbackListener, volleyErrorListener);
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(movieReq);
     }
+
+
 
     // handler for received Intents for the "trendingDataReady" event
     private BroadcastReceiver mTrendingMessageReceiver = new BroadcastReceiver() {
@@ -129,6 +156,72 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Response.Listener<JSONObject> getResponseListener() {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+
+                /// Parsing json
+                try {
+                    JSONObject feedObject = response.getJSONObject("feed");
+
+                    Iterator iterator = feedObject.keys();
+                    while(iterator.hasNext()) {
+                        Log.i("debug", "feedObject element: " + iterator.next());
+                    }
+
+                    JSONArray entryArray =  feedObject.getJSONArray("entry");
+                    Log.i("debug", "entryarray length is: " + entryArray.length());
+                    for(int i = 0; i < entryArray.length(); i++) {
+
+                        //get Tracks
+                        JSONObject item = entryArray.getJSONObject(i);
+
+                        //getting Title
+                        JSONObject title = item.getJSONObject("im:name");
+                        String trackTitle = title.getString("label");
+
+
+                        //getting Artist
+                        JSONObject artist = item.getJSONObject("im:artist");
+                        String trackArtist = artist.getString("label");
+
+                        //getting Image
+                        JSONArray imgArray = item.getJSONArray("im:image");
+                        JSONObject imgObject = imgArray.getJSONObject(1);
+                        String imgUrl = imgObject.getString("label");
+
+                        MusicItemData music = new MusicItemData();
+                        music.setTitle(trackTitle);
+                        music.setThumbnailUrl(imgUrl);
+                        music.setArtist(trackArtist);
+
+                        // adding movie to movies array
+                        musicList.add(music);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // notifying list adapter about data changes
+                // so that it renders the list view with updated data
+                feedCardsAdapter.notifyDataSetChanged();
+            }
+        };
+    }
+
+    private Response.ErrorListener getResponseErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+
+            }
+        };
     }
 
 }
