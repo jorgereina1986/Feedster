@@ -3,6 +3,7 @@ package jorgereina1986.c4q.nyc.feedster.adapters;
 /**
  * Created by c4q-Allison on 6/29/15.
  */
+
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import jorgereina1986.c4q.nyc.feedster.R;
@@ -35,9 +37,17 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
     }
 
     public void setTrendingCardData(TrendingData trendingData) {
-        //TODO: replace old card data
-        cardDataList.add(trendingData);
-
+        //replacing old card data
+        Boolean foundOldData = false;
+        for (int i = cardDataList.size() - 1; i >= 0; i--) {
+            if (cardDataList.get(i) instanceof TrendingData) {
+                cardDataList.set(i, trendingData);
+                foundOldData = true;
+            }
+        }
+        if (!foundOldData) {
+            cardDataList.add(trendingData);
+        }
     }
 
     public void setCardDataList(List<CardData> cardDataList) {
@@ -71,7 +81,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             trendingCardViewHolder.tvTrendItem3.setText(trendingData.getTrendingItems().get(3));
             trendingCardViewHolder.tvTrendItem4.setText(trendingData.getTrendingItems().get(4));
 
-      }
+        }
     }
 
     @Override

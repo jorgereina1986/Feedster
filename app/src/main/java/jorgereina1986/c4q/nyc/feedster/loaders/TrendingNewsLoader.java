@@ -83,16 +83,16 @@ public class TrendingNewsLoader extends AsyncTask<Void, Void, List<String>> {
         }
 
 
-        return trendsList;
+        return trendsList; //returns the result from background thread
     }
 
     @Override
-    protected void onPostExecute(List<String> trendsList) {
+    protected void onPostExecute(List<String> trendsList) { //receiving the trendsList result in the main (UI) thread
         trendingListData = trendsList;
-        Intent intent = new Intent("trendingDataReady");
+        Intent intent = new Intent("trendingDataReady"); //creating the Broadcast Message with "trendingDataReady"
             if (mContext != null) {
 
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent); //doing the actual broadcast--Local Broadcast Manager will both do the broadcast and receive it
             }
 
         // TODO : 3. implement this method.

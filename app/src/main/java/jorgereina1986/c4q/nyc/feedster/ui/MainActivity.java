@@ -36,55 +36,48 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "MainActivity.onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //initializing instance variables
+        trendingData = new TrendingData();
+        List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
+
+        //the next block locates the RecyclerView in the layout, creates the Adapter, & associates the Adapter to the RecyclerView
         RecyclerView rvFeedCards = (RecyclerView)findViewById(R.id.rv_feed_cards);
         rvFeedCards.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvFeedCards.setLayoutManager(llm);
-
-        trendingData = new TrendingData();
-        feedCardsAdapter = new FeedCardsAdapter();
-        List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
+        feedCardsAdapter = new FeedCardsAdapter(); //creating the adapter
         feedCardsAdapter.setCardDataList(cardDataList);
-        rvFeedCards.setAdapter(feedCardsAdapter);
-        trendsLoader = new TrendingNewsLoader(this);
-        trendsLoader.execute();
-
-
-
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
+        rvFeedCards.setAdapter(feedCardsAdapter);  //tying the adapter to the recycler view
 
         // Register mMessageReceiver to receive messages.
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("trendingDataReady"));
+
+        //create the Async task to trending data from the API. When it finishes, it will send us a notification.
+        trendsLoader = new TrendingNewsLoader(this);
+        trendsLoader.execute();
     }
+
     // handler for received Intents for the "trendingDataReady" event
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) { //message coming from ASYNC task loader
             trendsList = trendsLoader.getTrendingListData();
             Log.d("Receiver", "Received trendsList " + trendsList.size());
+            //next 2 lines are sending data to the Adapter
             trendingData.setTrendingItems(trendsList);
             feedCardsAdapter.setTrendingCardData(trendingData);
-            feedCardsAdapter.notifyDataSetChanged();
-
-
+            feedCardsAdapter.notifyDataSetChanged(); //asking Adapter to refresh the UI
         }
     };
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         // Unregister since the activity is not visible
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
-
-
-
-
-
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
