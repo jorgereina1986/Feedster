@@ -1,5 +1,10 @@
 package jorgereina1986.c4q.nyc.feedster;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +14,16 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.List;
+
 
 public class MainActivity extends ActionBarActivity {
 
     public static final String TAG = "My_Logcat";
     private TextView tvJson1;
     private TextView tvJson2;
+    private TrendingNewsLoader trendsLoader;
+    private List<String> trendsList;
 
 
     @Override
@@ -24,11 +33,36 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         initializeViews();
-        AsyncLoader trendsLoader = new AsyncLoader();
-        trendsLoader.
+        trendsLoader = new TrendingNewsLoader(this);
+        trendsLoader.execute();
 
 
 
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Register mMessageReceiver to receive messages.
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("trendingDataReady"));
+    }
+    // handler for received Intents for the "trendingDataReady" event
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            trendsList = trendsLoader.getTrendingListData();
+            Log.d("Receiver", "Received trendsList " + trendsList.size());
+
+
+        }
+    };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister since the activity is not visible
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
     private void initializeViews() {
