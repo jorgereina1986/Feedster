@@ -1,7 +1,7 @@
 package jorgereina1986.c4q.nyc.feedster.adapters;
 
 /**
- * Created by c4q-Allison on 6/29/15.
+ * Created by c4q-Allison, Jorge , and Anna on 6/29/15.
  */
 
 import android.support.v7.widget.CardView;
@@ -12,17 +12,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jorgereina1986.c4q.nyc.feedster.R;
 import jorgereina1986.c4q.nyc.feedster.models.CardData;
 import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
+import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
 
 
-/**
- * Created by c4q-Allison on 6/27/15.
- */
 public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.CardViewHolder> {
 
     List<CardData> cardDataList;
@@ -43,12 +40,30 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             if (cardDataList.get(i) instanceof TrendingData) {
                 cardDataList.set(i, trendingData);
                 foundOldData = true;
+
             }
         }
         if (!foundOldData) {
             cardDataList.add(trendingData);
         }
+
+
     }
+
+    public void setWeatherCardData(WeatherData weatherData) {
+        //replacing old card data
+        Boolean foundOldData = false;
+        for (int i = cardDataList.size() - 1; i >= 0; i--) {
+            if (cardDataList.get(i) instanceof WeatherData) {
+                cardDataList.set(i, weatherData);
+                foundOldData = true;
+            }
+        }
+        if (!foundOldData) {
+            cardDataList.add(weatherData);
+        }
+    }
+
 
     public void setCardDataList(List<CardData> cardDataList) {
         this.cardDataList = cardDataList;
@@ -62,6 +77,11 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
                 View trendingCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.trending_card, parent, false);
                 TrendingCardViewHolder trendingCardViewHolder = new TrendingCardViewHolder(trendingCard);
                 return trendingCardViewHolder;
+            case 1:
+
+                View weatherCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.weather_card, parent, false);
+                WeatherCardViewHolder weatherWeatherCardViewHolder = new WeatherCardViewHolder(weatherCard);
+                return weatherWeatherCardViewHolder;
 
             default:
                 return null;
@@ -81,8 +101,19 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             trendingCardViewHolder.tvTrendItem3.setText(trendingData.getTrendingItems().get(3));
             trendingCardViewHolder.tvTrendItem4.setText(trendingData.getTrendingItems().get(4));
 
+        } else if (cardData instanceof WeatherData)
+
+        {
+            WeatherData weatherData = (WeatherData) cardData;
+            WeatherCardViewHolder weatherCardViewHolder = (WeatherCardViewHolder) holder;
+
+            weatherCardViewHolder.tvTemperature.setText(weatherData.getTemperature());
+            weatherCardViewHolder.tvHumidity.setText(weatherData.getHumidity());
+            weatherCardViewHolder.tvWindSpeed.setText(weatherData.getWindSpeed());
         }
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -95,6 +126,9 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
         CardData cardData = cardDataList.get(position);
         if (cardData instanceof TrendingData) {
             return 3;
+        }
+        if (cardData instanceof WeatherData) {
+            return 1;
         }
         return -1;
     }
@@ -128,5 +162,23 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
 
     }
 
+    public static class WeatherCardViewHolder extends CardViewHolder {
+        CardView cvWeatherCard;
+        //add all the weather_card.xml
+        TextView tvHumidity;
+        TextView tvWindSpeed;
+        TextView tvTemperature;
 
+        public WeatherCardViewHolder(View itemView) {
+            super(itemView);
+
+            //also add here.findViewById....from layout file.
+            this.cvWeatherCard = (CardView) itemView.findViewById(R.id.weather_cardview);
+            this.tvHumidity = (TextView) cvWeatherCard.findViewById(R.id.humidity);
+            this.tvWindSpeed = (TextView) cvWeatherCard.findViewById(R.id.windSpeed);
+            this.tvTemperature = (TextView) cvWeatherCard.findViewById(R.id.temperature);
+        }
+    }
 }
+
+
