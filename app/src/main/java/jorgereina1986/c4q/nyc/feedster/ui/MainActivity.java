@@ -32,6 +32,7 @@ import jorgereina1986.c4q.nyc.feedster.adapters.FeedCardsAdapter;
 import jorgereina1986.c4q.nyc.feedster.loaders.TrendingNewsLoader;
 import jorgereina1986.c4q.nyc.feedster.loaders.WeatherNewsLoader;
 import jorgereina1986.c4q.nyc.feedster.models.CardData;
+import jorgereina1986.c4q.nyc.feedster.models.MusicData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicItemData;
 import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
@@ -46,10 +47,9 @@ public class MainActivity extends ActionBarActivity {
     private WeatherNewsLoader weatherLoader;
     private WeatherData weatherData;
     private List<MusicItemData> musicList = new ArrayList<>();
+    private MusicData musicData;
+
     private static final String MUSIC_API_URL = "https://itunes.apple.com/us/rss/topsongs/limit=10/explicit=true/json";
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +60,7 @@ public class MainActivity extends ActionBarActivity {
         //initializing instance variables
         trendingData = new TrendingData();
         weatherData = new WeatherData();
+        musicData = new MusicData();
 
         List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
 
@@ -135,7 +136,6 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -175,6 +175,8 @@ public class MainActivity extends ActionBarActivity {
 
                     JSONArray entryArray =  feedObject.getJSONArray("entry");
                     Log.i("debug", "entryarray length is: " + entryArray.length());
+
+
                     for(int i = 0; i < entryArray.length(); i++) {
 
                         //get Tracks
@@ -209,6 +211,8 @@ public class MainActivity extends ActionBarActivity {
 
                 // notifying list adapter about data changes
                 // so that it renders the list view with updated data
+                musicData.setMusicItemDataList(musicList);
+                feedCardsAdapter.setMusicCardData(musicData);
                 feedCardsAdapter.notifyDataSetChanged();
             }
         };
