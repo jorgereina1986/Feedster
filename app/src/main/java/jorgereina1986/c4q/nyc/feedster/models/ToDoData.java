@@ -1,5 +1,6 @@
 package jorgereina1986.c4q.nyc.feedster.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  */
 public class ToDoData extends CardData {
 
-    List<String> toDoList;
+    List<String> toDoList = new ArrayList<>();
 
 
     public List<String> getToDoList() {

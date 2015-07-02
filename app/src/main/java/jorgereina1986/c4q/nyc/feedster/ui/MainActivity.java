@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import jorgereina1986.c4q.nyc.feedster.AppController;
+import jorgereina1986.c4q.nyc.feedster.helpers.Constants;
 import jorgereina1986.c4q.nyc.feedster.R;
 import jorgereina1986.c4q.nyc.feedster.adapters.FeedCardsAdapter;
 import jorgereina1986.c4q.nyc.feedster.loaders.TrendingNewsLoader;
@@ -58,9 +59,6 @@ public class MainActivity extends Activity {
     List<String> toDoItemsList;
     ArrayAdapter<String> toDoAdapter;
 
-    public static final String MY_APP_PREFS = "MyAppPrefs";
-    public static final String TO_DO_ITEMS_SET = "toDoList";
-
     private static final String MUSIC_API_URL = "https://itunes.apple.com/us/rss/topsongs/limit=10/explicit=true/json";
 
     @Override
@@ -75,19 +73,22 @@ public class MainActivity extends Activity {
         musicData = new MusicData();
         toDoData = new ToDoData();
 
-        reloadToDoSet();
-        toDoData.setToDoList(toDoItemsList);
-
-        List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
-        cardDataList.add(toDoData);
         //the next block locates the RecyclerView in the layout, creates the Adapter, & associates the Adapter to the RecyclerView
         RecyclerView rvFeedCards = (RecyclerView) findViewById(R.id.rv_feed_cards);
 
         rvFeedCards.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvFeedCards.setLayoutManager(llm);
-        feedCardsAdapter = new FeedCardsAdapter(); //creating the adapter
+        feedCardsAdapter = new FeedCardsAdapter(this); //creating the adapter
+
+        reloadToDoSet();
+        toDoData.setToDoList(toDoItemsList);
+
+        List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
+        cardDataList.add(toDoData);
         feedCardsAdapter.setCardDataList(cardDataList);
+        feedCardsAdapter.setToDoCardData(toDoData);
+
         rvFeedCards.setAdapter(feedCardsAdapter);  //tying the adapter to the recycler view
 
         // Register mMessageReceiver to receive messages.
@@ -115,25 +116,14 @@ public class MainActivity extends Activity {
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(movieReq);
 
-        toDoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, toDoItemsList);
-//        toDoListItems.setAdapter(toDoAdapter);
     }
 
     private void reloadToDoSet() {
-        SharedPreferences thePrefs = getSharedPreferences(MY_APP_PREFS, 0);
+        SharedPreferences thePrefs = getSharedPreferences(Constants.MY_APP_PREFS, 0);
         Set<String> toDoItemsSet = new HashSet<String>();
-        toDoItemsSet = thePrefs.getStringSet(TO_DO_ITEMS_SET, toDoItemsSet);
+        toDoItemsSet = thePrefs.getStringSet(Constants.TO_DO_ITEMS_SET, toDoItemsSet);
         toDoItemsList = new ArrayList<String>(toDoItemsSet);
     }
-
-    private void saveToDoList() {
-        SharedPreferences thePrefs = getSharedPreferences(MY_APP_PREFS, 0);
-        SharedPreferences.Editor editor = thePrefs.edit();
-        Set<String> toDoSet = new HashSet<String>(toDoItemsList);
-        editor.putStringSet(TO_DO_ITEMS_SET, toDoSet);
-        editor.commit();
-    }
-
 
     // handler for received Intents for the "trendingDataReady" event
     private BroadcastReceiver mTrendingMessageReceiver = new BroadcastReceiver() {

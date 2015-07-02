@@ -4,6 +4,8 @@ package jorgereina1986.c4q.nyc.feedster.adapters;
  * Created by c4q-Allison, Jorge , and Anna on 6/29/15.
  */
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,9 +27,12 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jorgereina1986.c4q.nyc.feedster.AppController;
+import jorgereina1986.c4q.nyc.feedster.helpers.Constants;
 import jorgereina1986.c4q.nyc.feedster.R;
 import jorgereina1986.c4q.nyc.feedster.models.CardData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicData;
@@ -43,9 +48,12 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
     List<CardData> cardDataList;
     List<String> toDoItemsList;
     ArrayAdapter<String> toDoAdapter;
+    Context mContext;
 
-    public FeedCardsAdapter() {
+    public FeedCardsAdapter(Context context) {
+        mContext = context;
         cardDataList = new ArrayList<>();
+        toDoItemsList = new ArrayList<>();
     }
 
     public List<CardData> getCardDataList() {
@@ -59,12 +67,12 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             if (cardDataList.get(i) instanceof ToDoData) {
                 cardDataList.set(i, toDoData);
                 foundOldData = true;
-
             }
         }
         if (!foundOldData) {
             cardDataList.add(toDoData);
         }
+        toDoItemsList = toDoData.getToDoList();
     }
 
     public void setTrendingCardData(TrendingData trendingData) {
@@ -198,18 +206,43 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             }
         } else if (cardData instanceof ToDoData) {
             try {
-
                 ToDoData toDoData = (ToDoData) cardData;
+                toDoItemsList = toDoData.getToDoList();
+                final ArrayAdapter<String> toDoAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, toDoItemsList);
 
-                ToDoCardViewHolder toDoCardViewHolder = (ToDoCardViewHolder) holder;
+                final ToDoCardViewHolder toDoCardViewHolder = (ToDoCardViewHolder) holder;
                 toDoCardViewHolder.etToDoItem.setText("");
-                toDoCardViewHolder.lvToDoList.setAdapter();
 
+//                toDoAdapter.clear();
+                //  toDoAdapter.addAll(toDoItemsList);
+
+                toDoCardViewHolder.lvToDoList.setAdapter(toDoAdapter);
+                toDoAdapter.notifyDataSetChanged();
+
+                toDoCardViewHolder.btnAdd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String todoItem = String.valueOf(toDoCardViewHolder.etToDoItem.getText());
+                        toDoItemsList.add(todoItem);
+//                        toDoAdapter.add(todoItem);
+                        toDoCardViewHolder.etToDoItem.setText("");
+                        toDoAdapter.notifyDataSetChanged();
+                        saveToDoList();
+                    }
+                });
 
             } catch (Exception e) {
                 Log.e("TODO", e.getMessage());
             }
         }
+    }
+
+    private void saveToDoList() {
+        SharedPreferences thePrefs = mContext.getSharedPreferences(Constants.MY_APP_PREFS, 0);
+        SharedPreferences.Editor editor = thePrefs.edit();
+        Set<String> toDoSet = new HashSet<String>(toDoItemsList);
+        editor.putStringSet(Constants.TO_DO_ITEMS_SET, toDoSet);
+        editor.commit();
     }
 
     protected void bindMusicRow(MusicItemData musicItemData, RelativeLayout musicItemRow) {
