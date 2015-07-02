@@ -141,7 +141,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             weatherCardViewHolder.tvTimezone.setText(weatherData.getTimezone());
             showWeatherIcon(weatherData.getIcon(), weatherCardViewHolder.ivIcon);
             int temp = (int) Double.parseDouble(weatherData.getTemperature());
-            weatherCardViewHolder.tvTemperature.setText(temp + "");
+            weatherCardViewHolder.tvTemperature.setText(temp + "" + "℉");
             weatherCardViewHolder.tvHumidity.setText(weatherData.getHumidity());
             weatherCardViewHolder.tvWindSpeed.setText(weatherData.getWindSpeed());
         }catch (Exception e){
