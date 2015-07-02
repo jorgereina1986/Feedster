@@ -5,14 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,8 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import jorgereina1986.c4q.nyc.feedster.AppController;
 import jorgereina1986.c4q.nyc.feedster.R;
@@ -35,6 +38,7 @@ import jorgereina1986.c4q.nyc.feedster.loaders.WeatherNewsLoader;
 import jorgereina1986.c4q.nyc.feedster.models.CardData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicItemData;
+import jorgereina1986.c4q.nyc.feedster.models.ToDoData;
 import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
 
@@ -49,6 +53,13 @@ public class MainActivity extends Activity {
     private WeatherData weatherData;
     private List<MusicItemData> musicList = new ArrayList<>();
     private MusicData musicData;
+    private ToDoData toDoData;
+
+    List<String> toDoItemsList;
+    ArrayAdapter<String> toDoAdapter;
+
+    public static final String MY_APP_PREFS = "MyAppPrefs";
+    public static final String TO_DO_ITEMS_SET = "toDoList";
 
     private static final String MUSIC_API_URL = "https://itunes.apple.com/us/rss/topsongs/limit=10/explicit=true/json";
 
@@ -62,9 +73,13 @@ public class MainActivity extends Activity {
         trendingData = new TrendingData();
         weatherData = new WeatherData();
         musicData = new MusicData();
+        toDoData = new ToDoData();
+
+        reloadToDoSet();
+        toDoData.setToDoList(toDoItemsList);
 
         List<CardData> cardDataList = new ArrayList<>();   //  TestData.getTestData();
-
+        cardDataList.add(toDoData);
         //the next block locates the RecyclerView in the layout, creates the Adapter, & associates the Adapter to the RecyclerView
         RecyclerView rvFeedCards = (RecyclerView) findViewById(R.id.rv_feed_cards);
 
@@ -99,8 +114,25 @@ public class MainActivity extends Activity {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(movieReq);
+
+        toDoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, toDoItemsList);
+//        toDoListItems.setAdapter(toDoAdapter);
     }
 
+    private void reloadToDoSet() {
+        SharedPreferences thePrefs = getSharedPreferences(MY_APP_PREFS, 0);
+        Set<String> toDoItemsSet = new HashSet<String>();
+        toDoItemsSet = thePrefs.getStringSet(TO_DO_ITEMS_SET, toDoItemsSet);
+        toDoItemsList = new ArrayList<String>(toDoItemsSet);
+    }
+
+    private void saveToDoList() {
+        SharedPreferences thePrefs = getSharedPreferences(MY_APP_PREFS, 0);
+        SharedPreferences.Editor editor = thePrefs.edit();
+        Set<String> toDoSet = new HashSet<String>(toDoItemsList);
+        editor.putStringSet(TO_DO_ITEMS_SET, toDoSet);
+        editor.commit();
+    }
 
 
     // handler for received Intents for the "trendingDataReady" event

@@ -11,6 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import android.widget.ImageView;
@@ -28,6 +32,7 @@ import jorgereina1986.c4q.nyc.feedster.R;
 import jorgereina1986.c4q.nyc.feedster.models.CardData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicData;
 import jorgereina1986.c4q.nyc.feedster.models.MusicItemData;
+import jorgereina1986.c4q.nyc.feedster.models.ToDoData;
 import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
 
@@ -36,6 +41,8 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
 
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
     List<CardData> cardDataList;
+    List<String> toDoItemsList;
+    ArrayAdapter<String> toDoAdapter;
 
     public FeedCardsAdapter() {
         cardDataList = new ArrayList<>();
@@ -43,6 +50,21 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
 
     public List<CardData> getCardDataList() {
         return cardDataList;
+    }
+
+    public void setToDoCardData(ToDoData toDoData) {
+        //replacing old card data
+        Boolean foundOldData = false;
+        for (int i = cardDataList.size() - 1; i >= 0; i--) {
+            if (cardDataList.get(i) instanceof ToDoData) {
+                cardDataList.set(i, toDoData);
+                foundOldData = true;
+
+            }
+        }
+        if (!foundOldData) {
+            cardDataList.add(toDoData);
+        }
     }
 
     public void setTrendingCardData(TrendingData trendingData) {
@@ -111,6 +133,10 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
                 MusicCardViewHolder musicCardViewHolder = new MusicCardViewHolder(musicCard);
                 return musicCardViewHolder;
 
+            case 4:
+                View toDoCard = LayoutInflater.from(parent.getContext()).inflate(R.layout.to_do_card, parent, false);
+                ToDoCardViewHolder toDoCardViewHolder = new ToDoCardViewHolder(toDoCard);
+                return toDoCardViewHolder;
             default:
                 return null;
         }
@@ -129,25 +155,25 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
                 trendingCardViewHolder.tvTrendItem2.setText(trendingData.getTrendingItems().get(2));
                 trendingCardViewHolder.tvTrendItem3.setText(trendingData.getTrendingItems().get(3));
                 trendingCardViewHolder.tvTrendItem4.setText(trendingData.getTrendingItems().get(4));
-            }catch (Exception e){
-                Log.e("trendingData",e.getMessage());
+            } catch (Exception e) {
+                Log.e("trendingData", e.getMessage());
             }
-        } else if (cardData instanceof WeatherData){
-        try {
-            WeatherData weatherData = (WeatherData) cardData;
-            WeatherCardViewHolder weatherCardViewHolder = (WeatherCardViewHolder) holder;
+        } else if (cardData instanceof WeatherData) {
+            try {
+                WeatherData weatherData = (WeatherData) cardData;
+                WeatherCardViewHolder weatherCardViewHolder = (WeatherCardViewHolder) holder;
 
-            weatherCardViewHolder.tvSummary.setText(weatherData.getSummary());
-            weatherCardViewHolder.tvTimezone.setText(weatherData.getTimezone());
-            showWeatherIcon(weatherData.getIcon(), weatherCardViewHolder.ivIcon);
-            int temp = (int) Double.parseDouble(weatherData.getTemperature());
-            weatherCardViewHolder.tvTemperature.setText(temp + "" + "℉");
-            weatherCardViewHolder.tvHumidity.setText(weatherData.getHumidity());
-            weatherCardViewHolder.tvWindSpeed.setText(weatherData.getWindSpeed());
-        }catch (Exception e){
-            Log.e("weather",e.getMessage());
-        }
-        } else if (cardData instanceof MusicData){
+                weatherCardViewHolder.tvSummary.setText(weatherData.getSummary());
+                weatherCardViewHolder.tvTimezone.setText(weatherData.getTimezone());
+                showWeatherIcon(weatherData.getIcon(), weatherCardViewHolder.ivIcon);
+                int temp = (int) Double.parseDouble(weatherData.getTemperature());
+                weatherCardViewHolder.tvTemperature.setText(temp + "" + "℉");
+                weatherCardViewHolder.tvHumidity.setText(weatherData.getHumidity());
+                weatherCardViewHolder.tvWindSpeed.setText(weatherData.getWindSpeed());
+            } catch (Exception e) {
+                Log.e("weather", e.getMessage());
+            }
+        } else if (cardData instanceof MusicData) {
             try {
 
                 MusicData musicData = (MusicData) cardData;
@@ -167,12 +193,25 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
 
                 MusicItemData itemData4 = musicData.getMusicItemDataList().get(4);
                 bindMusicRow(itemData4, musicCardViewHolder.rlMusicItem4);
-            }catch (Exception e){
-                Log.e("music",e.getMessage());
+            } catch (Exception e) {
+                Log.e("music", e.getMessage());
             }
+        } else if (cardData instanceof ToDoData) {
+            try {
 
+                ToDoData toDoData = (ToDoData) cardData;
+
+                ToDoCardViewHolder toDoCardViewHolder = (ToDoCardViewHolder) holder;
+                toDoCardViewHolder.etToDoItem.setText("");
+                toDoCardViewHolder.lvToDoList.setAdapter();
+
+
+            } catch (Exception e) {
+                Log.e("TODO", e.getMessage());
+            }
         }
     }
+
     protected void bindMusicRow(MusicItemData musicItemData, RelativeLayout musicItemRow) {
         TextView tvTitle = (TextView) musicItemRow.findViewById(R.id.title);
         TextView tvArtist = (TextView) musicItemRow.findViewById(R.id.artist);
@@ -182,17 +221,17 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
         thumbNail.setImageUrl(musicItemData.getThumbnailUrl(), imageLoader);
     }
 
-    private void showWeatherIcon(String iconData, ImageView imageView){
-        if (iconData == null){
+    private void showWeatherIcon(String iconData, ImageView imageView) {
+        if (iconData == null) {
             //find another icon to replace this icon
             imageView.setImageResource(R.drawable.weather_sunny_icon);
             return;
         }
-        if (iconData.equals("partly-cloudy-day")){
+        if (iconData.equals("partly-cloudy-day")) {
             imageView.setImageResource(R.drawable.cloud_256);
-        }else if (iconData.equals("rain")){
+        } else if (iconData.equals("rain")) {
             imageView.setImageResource(R.drawable.rainy_cloud_256);
-        }else {
+        } else {
             imageView.setImageResource(R.drawable.big_sun_256);
         }
     }
@@ -215,6 +254,10 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
         if (cardData instanceof MusicData) {
             return 2;
         }
+        if (cardData instanceof ToDoData) {
+            return 4;
+        }
+
         return -1;
     }
 
@@ -225,6 +268,21 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
         }
     }
 
+    public static class ToDoCardViewHolder extends CardViewHolder {
+        CardView cvToDoCard;
+        EditText etToDoItem;
+        Button btnAdd;
+        ListView lvToDoList;
+
+        public ToDoCardViewHolder(View itemView) {
+            super(itemView);
+//don't need the "this"s but they're helpful as a just-in-case:
+            this.cvToDoCard = (CardView) itemView.findViewById(R.id.to_do_cardview);
+            this.etToDoItem = (EditText) itemView.findViewById(R.id.toDoEditTxtItem);
+            this.btnAdd = (Button) itemView.findViewById(R.id.toDoBtnAdd);
+            this.lvToDoList = (ListView) itemView.findViewById(R.id.toDoListItems);
+        }
+    }
 
     public static class TrendingCardViewHolder extends CardViewHolder {
         CardView cvTrendingCard;
@@ -271,6 +329,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             this.tvTemperature = (TextView) cvWeatherCard.findViewById(R.id.temperature);
         }
     }
+
     public static class MusicCardViewHolder extends CardViewHolder {
         CardView cvMusicCard;
         RelativeLayout rlMusicItem0;
