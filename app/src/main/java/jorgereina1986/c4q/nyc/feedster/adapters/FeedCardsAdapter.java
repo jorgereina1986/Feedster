@@ -138,7 +138,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             WeatherCardViewHolder weatherCardViewHolder = (WeatherCardViewHolder) holder;
 
             weatherCardViewHolder.tvSummary.setText(weatherData.getSummary());
-            //    weatherCardViewHolder.tvTimezone.setText(weatherData.getTimezone());
+            weatherCardViewHolder.tvTimezone.setText(weatherData.getTimezone());
             showWeatherIcon(weatherData.getIcon(), weatherCardViewHolder.ivIcon);
             weatherCardViewHolder.tvTemperature.setText(weatherData.getTemperature());
             weatherCardViewHolder.tvHumidity.setText(weatherData.getHumidity());
@@ -250,7 +250,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
         CardView cvWeatherCard;
         //add all the weather_card.xml
         TextView tvSummary;
-        //TextView tvTimezone;
+        TextView tvTimezone;
         ImageView ivIcon;
         TextView tvHumidity;
         TextView tvWindSpeed;
@@ -263,7 +263,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             this.cvWeatherCard = (CardView) itemView.findViewById(R.id.weather_cardview);
 
             this.tvSummary = (TextView) cvWeatherCard.findViewById(R.id.summary);
-//            this.tvTimezone = (TextView) cvWeatherCard.findViewById(R.id.timezone);
+            this.tvTimezone = (TextView) cvWeatherCard.findViewById(R.id.timezone);
             this.ivIcon = (ImageView) cvWeatherCard.findViewById(R.id.icon);
             this.tvHumidity = (TextView) cvWeatherCard.findViewById(R.id.humidity);
             this.tvWindSpeed = (TextView) cvWeatherCard.findViewById(R.id.windSpeed);

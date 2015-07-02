@@ -38,9 +38,19 @@ public class WeatherNewsLoader extends AsyncTask<Void, Void, WeatherData> {
     @Override
     protected WeatherData doInBackground(Void... params) {
 
-        String jsonUrl = "https://api.forecast.io/forecast/94f6ec198bf9cbc3021ee4ae49a87d57/37.8267,-122.423";
+        String jsonUrl = "https://api.forecast.io/forecast/94f6ec198bf9cbc3021ee4ae49a87d57";
         WeatherData weatherData = new WeatherData();
         //use this variable to load everything from JSON.
+        LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        //     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//        Location location = lm.getLastKnownLocation(null);
+        double longitude = -73.58; //location.getLongitude();
+        double latitude = 40.47; //location.getLatitude();
+
+        jsonUrl = jsonUrl + "/" + latitude + "," + longitude;
+        //       WeatherData weatherData = new WeatherData();
+//        //use this variable to load everything from JSON.
+//
 
         try {
             URL url = new URL(jsonUrl);
@@ -61,7 +71,11 @@ public class WeatherNewsLoader extends AsyncTask<Void, Void, WeatherData> {
             JSONObject topLevelObject = new JSONObject(jsonString);
             JSONObject weatherObject = topLevelObject.getJSONObject("currently");
 
-
+            try {
+                weatherData.setTimezone(topLevelObject.getString("timezone"));
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
             try {
                 weatherData.setSummary(weatherObject.getString("summary"));
             } catch (Exception e) {
@@ -112,103 +126,10 @@ public class WeatherNewsLoader extends AsyncTask<Void, Void, WeatherData> {
         return weatherData; //returns the result from background thread, this line will be different.
     }
 
-
-
-//    @Override
-//    protected WeatherData doInBackground(Void... params) {
-//
-//        String jsonUrl = "https://api.forecast.io/forecast/94f6ec198bf9cbc3021ee4ae49a87d57/40.47,73.58";
-//        //mContext.getSystemService coming back as null, try to research.
-////        LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-////       locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-////        Location location = lm.getLastKnownLocation(null);
-////        double longitude = 73.58; //location.getLongitude();
-////        double latitude = 40.47; //location.getLatitude();
-//
-//        //40	47	73	58	12:00 noon new york city.
-////        jsonUrl = jsonUrl + "/" + latitude + "," + longitude;
-//        WeatherData weatherData = new WeatherData();
-//        //use this variable to load everything from JSON.
-//
-//        try {
-//            URL url = new URL(jsonUrl);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//
-//            InputStream stream = connection.getInputStream();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-//
-//            StringBuilder builder = new StringBuilder();
-//            String line = "";
-//            while ((line = reader.readLine()) != null) {
-//                builder.append(line + "\n");
-//            }
-//
-//            String jsonString = builder.toString();
-//
-//
-//            JSONObject topLevelObject = new JSONObject(jsonString);
-//            JSONObject weatherObject = topLevelObject.getJSONObject("currently");
-//
-//            try {
-//                weatherData.setTimezone(topLevelObject.getString("timezone"));
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//            try {
-//                weatherData.setSummary(weatherObject.getString("summary"));
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//            try {
-//                weatherData.setIcon(weatherObject.getString("icon") + "");
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//            try {
-//                weatherData.setWindSpeed(weatherObject.getDouble("windSpeed") + "");
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//            try {
-//                weatherData.setHumidity(weatherObject.getDouble("humidity") + "");
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//            try {
-//                weatherData.setTemperature(weatherObject.getDouble("temperature") + "");
-//            } catch (Exception e) {
-//                Log.e("weather JSON", e.getMessage());
-//            }
-//
-//
-//        } catch (
-//                MalformedURLException e
-//                )
-//
-//        {
-//            e.printStackTrace();
-//        } catch (
-//                IOException e
-//                )
-//
-//        {
-//            e.printStackTrace();
-//        } catch (
-//                JSONException e
-//                )
-//
-//        {
-//            e.printStackTrace();
-//        }
-//
-//        return weatherData; //returns the result from background thread, this line will be different.
-//    }
-
     @Override
-    //will be different.
     protected void onPostExecute(WeatherData weatherData) { //receiving the weatherdata result in the main (UI) thread
         mWeatherData = weatherData;
-        //message will be "weatherdataready".
+
         Intent intent = new Intent("weatherDataReady"); //creating the Broadcast Message with "weatherDataReady"
         if (mContext != null) {
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent); //doing the actual broadcast--Local Broadcast Manager will both do the broadcast and receive it

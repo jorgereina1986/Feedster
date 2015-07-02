@@ -4,7 +4,7 @@ package jorgereina1986.c4q.nyc.feedster.models;
  */
 public class WeatherData extends CardData {
 
-//    String timezone;
+    String timezone;
     String summary;
     String icon;
     String temperature;
@@ -19,13 +19,13 @@ public class WeatherData extends CardData {
         this.icon = icon;
     }
 
-//    public String getTimezone() {
-//        return timezone;
-//    }
-//
-//    public void setTimezone(String timezone) {
-//        this.timezone = timezone;
-//    }
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
 
     public String getSummary() {
         return summary;
