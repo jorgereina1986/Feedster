@@ -147,23 +147,28 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             Log.e("weather",e.getMessage());
         }
         } else if (cardData instanceof MusicData){
-            MusicData musicData = (MusicData) cardData;
-            MusicCardViewHolder musicCardViewHolder = (MusicCardViewHolder) holder;
+            try {
 
-            MusicItemData itemData0 = musicData.getMusicItemDataList().get(0);
-            bindMusicRow(itemData0, musicCardViewHolder.rlMusicItem0);
+                MusicData musicData = (MusicData) cardData;
+                MusicCardViewHolder musicCardViewHolder = (MusicCardViewHolder) holder;
 
-            MusicItemData itemData1 = musicData.getMusicItemDataList().get(1);
-            bindMusicRow(itemData1, musicCardViewHolder.rlMusicItem1);
+                MusicItemData itemData0 = musicData.getMusicItemDataList().get(0);
+                bindMusicRow(itemData0, musicCardViewHolder.rlMusicItem0);
 
-            MusicItemData itemData2 = musicData.getMusicItemDataList().get(2);
-            bindMusicRow(itemData2, musicCardViewHolder.rlMusicItem2);
+                MusicItemData itemData1 = musicData.getMusicItemDataList().get(1);
+                bindMusicRow(itemData1, musicCardViewHolder.rlMusicItem1);
 
-            MusicItemData itemData3 = musicData.getMusicItemDataList().get(3);
-            bindMusicRow(itemData3, musicCardViewHolder.rlMusicItem3);
+                MusicItemData itemData2 = musicData.getMusicItemDataList().get(2);
+                bindMusicRow(itemData2, musicCardViewHolder.rlMusicItem2);
 
-            MusicItemData itemData4 = musicData.getMusicItemDataList().get(4);
-            bindMusicRow(itemData4, musicCardViewHolder.rlMusicItem4);
+                MusicItemData itemData3 = musicData.getMusicItemDataList().get(3);
+                bindMusicRow(itemData3, musicCardViewHolder.rlMusicItem3);
+
+                MusicItemData itemData4 = musicData.getMusicItemDataList().get(4);
+                bindMusicRow(itemData4, musicCardViewHolder.rlMusicItem4);
+            }catch (Exception e){
+                Log.e("music",e.getMessage());
+            }
 
         }
     }
