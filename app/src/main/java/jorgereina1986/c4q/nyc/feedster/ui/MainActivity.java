@@ -193,7 +193,7 @@ public class MainActivity extends ActionBarActivity {
 
                         //getting Image
                         JSONArray imgArray = item.getJSONArray("im:image");
-                        JSONObject imgObject = imgArray.getJSONObject(1);
+                        JSONObject imgObject = imgArray.getJSONObject(1)    ;
                         String imgUrl = imgObject.getString("label");
 
                         MusicItemData music = new MusicItemData();

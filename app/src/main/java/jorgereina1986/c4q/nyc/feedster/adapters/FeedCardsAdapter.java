@@ -65,7 +65,7 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
             }
         }
         if (!foundOldData) {
-            cardDataList.add(weatherData);
+            cardDataList.add(0, weatherData);
         }
     }
 
