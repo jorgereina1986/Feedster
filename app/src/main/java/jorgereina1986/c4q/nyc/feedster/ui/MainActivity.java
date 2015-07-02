@@ -1,5 +1,6 @@
 package jorgereina1986.c4q.nyc.feedster.ui;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,7 @@ import jorgereina1986.c4q.nyc.feedster.models.TrendingData;
 import jorgereina1986.c4q.nyc.feedster.loaders.WeatherNewsLoader;
 import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     public static final String TAG = "My_Logcat";
     private TrendingNewsLoader trendsLoader;
