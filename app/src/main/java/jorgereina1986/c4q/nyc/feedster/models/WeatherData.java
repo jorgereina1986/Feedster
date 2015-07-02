@@ -4,10 +4,36 @@ package jorgereina1986.c4q.nyc.feedster.models;
  */
 public class WeatherData extends CardData {
 
+//    String timezone;
+    String summary;
+    String icon;
     String temperature;
     String humidity;
     String windSpeed;
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+//    public String getTimezone() {
+//        return timezone;
+//    }
+//
+//    public void setTimezone(String timezone) {
+//        this.timezone = timezone;
+//    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
     public String getHumidity() {
         return humidity;

@@ -2,8 +2,11 @@ package jorgereina1986.c4q.nyc.feedster.loaders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,21 +61,148 @@ public class WeatherNewsLoader extends AsyncTask<Void, Void, WeatherData> {
             JSONObject topLevelObject = new JSONObject(jsonString);
             JSONObject weatherObject = topLevelObject.getJSONObject("currently");
 
-            weatherData.setWindSpeed(weatherObject.getDouble("windSpeed") + "");
-            weatherData.setHumidity(weatherObject.getDouble("humidity") + "");
-            weatherData.setTemperature(weatherObject.getDouble("temperature") + "");
+
+            try {
+                weatherData.setSummary(weatherObject.getString("summary"));
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
+            try {
+                weatherData.setIcon(weatherObject.getString("icon") + "");
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
+            try {
+                weatherData.setWindSpeed(weatherObject.getDouble("windSpeed") + "");
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
+            try {
+                weatherData.setHumidity(weatherObject.getDouble("humidity") + "");
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
+            try {
+                weatherData.setTemperature(weatherObject.getDouble("temperature") + "");
+            } catch (Exception e) {
+                Log.e("weather JSON", e.getMessage());
+            }
 
 
-        } catch (MalformedURLException e) {
+        } catch (
+                MalformedURLException e
+                )
+
+        {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (
+                IOException e
+                )
+
+        {
             e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (
+                JSONException e
+                )
+
+        {
             e.printStackTrace();
         }
 
         return weatherData; //returns the result from background thread, this line will be different.
     }
+
+
+
+//    @Override
+//    protected WeatherData doInBackground(Void... params) {
+//
+//        String jsonUrl = "https://api.forecast.io/forecast/94f6ec198bf9cbc3021ee4ae49a87d57/40.47,73.58";
+//        //mContext.getSystemService coming back as null, try to research.
+////        LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+////       locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+////        Location location = lm.getLastKnownLocation(null);
+////        double longitude = 73.58; //location.getLongitude();
+////        double latitude = 40.47; //location.getLatitude();
+//
+//        //40	47	73	58	12:00 noon new york city.
+////        jsonUrl = jsonUrl + "/" + latitude + "," + longitude;
+//        WeatherData weatherData = new WeatherData();
+//        //use this variable to load everything from JSON.
+//
+//        try {
+//            URL url = new URL(jsonUrl);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//
+//            InputStream stream = connection.getInputStream();
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+//
+//            StringBuilder builder = new StringBuilder();
+//            String line = "";
+//            while ((line = reader.readLine()) != null) {
+//                builder.append(line + "\n");
+//            }
+//
+//            String jsonString = builder.toString();
+//
+//
+//            JSONObject topLevelObject = new JSONObject(jsonString);
+//            JSONObject weatherObject = topLevelObject.getJSONObject("currently");
+//
+//            try {
+//                weatherData.setTimezone(topLevelObject.getString("timezone"));
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//            try {
+//                weatherData.setSummary(weatherObject.getString("summary"));
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//            try {
+//                weatherData.setIcon(weatherObject.getString("icon") + "");
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//            try {
+//                weatherData.setWindSpeed(weatherObject.getDouble("windSpeed") + "");
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//            try {
+//                weatherData.setHumidity(weatherObject.getDouble("humidity") + "");
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//            try {
+//                weatherData.setTemperature(weatherObject.getDouble("temperature") + "");
+//            } catch (Exception e) {
+//                Log.e("weather JSON", e.getMessage());
+//            }
+//
+//
+//        } catch (
+//                MalformedURLException e
+//                )
+//
+//        {
+//            e.printStackTrace();
+//        } catch (
+//                IOException e
+//                )
+//
+//        {
+//            e.printStackTrace();
+//        } catch (
+//                JSONException e
+//                )
+//
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        return weatherData; //returns the result from background thread, this line will be different.
+//    }
 
     @Override
     //will be different.
