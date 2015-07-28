@@ -2,7 +2,6 @@ package jorgereina1986.c4q.nyc.feedster.loaders;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
@@ -103,23 +102,11 @@ public class WeatherNewsLoader extends AsyncTask<Void, Void, WeatherData> {
             }
 
 
-        } catch (
-                MalformedURLException e
-                )
-
-        {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (
-                IOException e
-                )
-
-        {
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (
-                JSONException e
-                )
-
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 

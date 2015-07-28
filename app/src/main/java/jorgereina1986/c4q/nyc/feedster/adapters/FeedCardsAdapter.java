@@ -163,6 +163,9 @@ public class FeedCardsAdapter extends RecyclerView.Adapter<FeedCardsAdapter.Card
                 trendingCardViewHolder.tvTrendItem2.setText(trendingData.getTrendingItems().get(2));
                 trendingCardViewHolder.tvTrendItem3.setText(trendingData.getTrendingItems().get(3));
                 trendingCardViewHolder.tvTrendItem4.setText(trendingData.getTrendingItems().get(4));
+
+
+
             } catch (Exception e) {
                 Log.e("trendingData", e.getMessage());
             }
