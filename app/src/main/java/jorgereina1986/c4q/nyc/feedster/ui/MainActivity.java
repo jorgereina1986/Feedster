@@ -1,14 +1,18 @@
 package jorgereina1986.c4q.nyc.feedster.ui;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import jorgereina1986.c4q.nyc.feedster.R;
+import jorgereina1986.c4q.nyc.feedster.ui.fragments.FragmentLeft;
+import jorgereina1986.c4q.nyc.feedster.ui.fragments.MusicFragment;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FragmentLeft.FragmentLeftInterface {
 
     public static final String TAG = "MainActivity";
 
@@ -49,4 +53,33 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean isTablet(){
+        if (findViewById(R.id.right_fragment_container) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void cardSelected(String cardName) {
+
+        if (isTablet()) {
+            // use transaction manager to replace detail fragment
+
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+
+            if (cardName.equals("music")) {
+                ft.replace(R.id.right_fragment_container, new MusicFragment());
+            }
+
+            ft.commit();
+        }
+        else {
+            //start detail activity
+//            Intent intent = new Intent(MusicDetail.class);
+//            startActivity(intent);
+        }
+
+    }
 }

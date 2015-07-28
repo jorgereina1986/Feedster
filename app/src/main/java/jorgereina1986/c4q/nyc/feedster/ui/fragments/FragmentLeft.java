@@ -1,5 +1,6 @@
 package jorgereina1986.c4q.nyc.feedster.ui.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -50,6 +51,11 @@ import jorgereina1986.c4q.nyc.feedster.models.WeatherData;
  */
 public class FragmentLeft extends Fragment {
 
+    public interface FragmentLeftInterface{
+        public void cardSelected(String cardName);
+    }
+
+
     public static final String TAG = "FragmentLeft";
     private TrendingNewsLoader trendsLoader;
     private List<String> trendsList;
@@ -61,10 +67,21 @@ public class FragmentLeft extends Fragment {
     private MusicData musicData;
     private ToDoData toDoData;
 
+    FragmentLeftInterface parent = null;
+
     List<String> toDoItemsList;
     ArrayAdapter<String> toDoAdapter;
 
     private static final String MUSIC_API_URL = "https://itunes.apple.com/us/rss/topsongs/limit=10/explicit=true/json";
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentLeftInterface) {
+            parent = (FragmentLeftInterface) activity;
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +129,14 @@ public class FragmentLeft extends Fragment {
 
         rvFeedCards.setAdapter(feedCardsAdapter);  //tying the adapter to the recycler view
 
+        rvFeedCards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (parent != null) {
+                    parent.cardSelected("music");
+                }
+            }
+        });
         //create the Async task to trending data from the API. When it finishes, it will send us a notification.
         trendsLoader = new TrendingNewsLoader(getActivity());
         trendsLoader.execute();
